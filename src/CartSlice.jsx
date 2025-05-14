@@ -5,7 +5,7 @@ export const CartSlice = createSlice({
     name: 'cart',
     initialState: {
         items: [], // Initialize items as an empty array
-        numOfItems: 0 // Number of items multiplied by their quantity
+        numOfItems: 0 // Number of items in the cart
     },
 
     reducers: {
@@ -27,21 +27,16 @@ export const CartSlice = createSlice({
             const { name, quantity } = action.payload;
             state.items = state.items.filter(item => item.name !== name);
             state.numOfItems -= quantity;
-
-            // Just to be sure... I hate negative numbers
-            if (state.numOfItems < 0) {
-                state.numOfItems = 0;
-            }
         },
 
         updateQuantity: (state, action) => {
-            const { name, quantity } = action.payload;
-            const existingItem = state.items.find(item => item.name === name);
-
-            if (existingItem) {
-                const differenceQuantity = quantity - existingItem.quantity;
-                state.numOfItems += differenceQuantity;
-                existingItem.quantity = quantity;
+            const { name, quantity } = action.payload; // Destructure the product name and new quantity from the action payload
+            // Find the item in the cart that matches the given name
+            const itemToUpdate = state.items.find(item => item.name === name);
+            if (itemToUpdate) {
+                const diff = quantity - itemToUpdate.quantity;
+                state.numOfItems += diff;
+                itemToUpdate.quantity = quantity; // If the item is found, update its quantity to the new value
             }
         },
     },
